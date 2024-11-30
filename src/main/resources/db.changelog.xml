@@ -1,0 +1,203 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.29.xsd"
+        objectQuotingStrategy="QUOTE_ONLY_RESERVED_WORDS">
+    <changeSet id="1732927919724-1" author="Andres">
+        <createTable tableName="authors">
+            <column name="id" type="UUID">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_authors"/>
+            </column>
+            <column name="first_name" type="VARCHAR(255)"/>
+            <column name="last_name" type="VARCHAR(255)"/>
+            <column name="pseudonym" type="VARCHAR(255)"/>
+            <column name="biography" type="VARCHAR(255)"/>
+            <column name="birth_date" type="DATE"/>
+            <column name="created_at" type="DATETIME"/>
+            <column name="updated_at" type="DATETIME"/>
+        </createTable>
+    </changeSet>
+    <changeSet id="1732927919724-2" author="Andres">
+        <createTable tableName="book_author">
+            <column name="author_id" type="UUID">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_book_author"/>
+            </column>
+            <column name="book_id" type="UUID">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_book_author"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet id="1732927919724-3" author="Andres">
+        <createTable tableName="book_genre">
+            <column name="book_id" type="UUID">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_book_genre"/>
+            </column>
+            <column name="genre_id" type="UUID">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_book_genre"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet id="1732927919724-4" author="Andres">
+        <createTable tableName="books">
+            <column name="id" type="UUID">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_books"/>
+            </column>
+            <column name="title" type="VARCHAR(255)"/>
+            <column name="isbn" type="VARCHAR(255)"/>
+            <column name="image" type="VARCHAR(255)"/>
+            <column name="synopsis" type="VARCHAR(500)"/>
+            <column name="publisher" type="VARCHAR(255)"/>
+            <column name="year" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="status" type="VARCHAR(255)"/>
+            <column name="created_at" type="DATETIME"/>
+            <column name="updated_at" type="DATETIME"/>
+        </createTable>
+    </changeSet>
+    <changeSet id="1732927919724-5" author="Andres">
+        <createTable tableName="genres">
+            <column name="id" type="UUID">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_genres"/>
+            </column>
+            <column name="name" type="VARCHAR(255)"/>
+            <column name="description" type="VARCHAR(255)"/>
+            <column name="color" type="VARCHAR(255)"/>
+            <column name="created_at" type="DATETIME"/>
+            <column name="updated_at" type="DATETIME"/>
+        </createTable>
+    </changeSet>
+    <changeSet id="1732927919724-6" author="Andres">
+        <createTable tableName="loans">
+            <column name="id" type="UUID">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_loans"/>
+            </column>
+            <column name="borrower_id" type="UUID"/>
+            <column name="book_id" type="UUID"/>
+            <column name="status" type="VARCHAR(255)"/>
+            <column name="due_date" type="DATE"/>
+            <column name="loaned_at" type="DATETIME"/>
+            <column name="returned_at" type="DATETIME"/>
+            <column name="created_at" type="DATETIME"/>
+            <column name="updated_at" type="DATETIME"/>
+        </createTable>
+    </changeSet>
+    <changeSet id="1732927919724-7" author="Andres">
+        <createTable tableName="permissions">
+            <column name="id" type="UUID">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_permissions"/>
+            </column>
+            <column name="name" type="VARCHAR(255)"/>
+            <column name="description" type="VARCHAR(255)"/>
+            <column name="created_at" type="DATETIME"/>
+            <column name="updated_at" type="DATETIME"/>
+        </createTable>
+    </changeSet>
+    <changeSet id="1732927919724-8" author="Andres">
+        <createTable tableName="role_permission">
+            <column name="permission_id" type="UUID">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_role_permission"/>
+            </column>
+            <column name="role_id" type="UUID">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_role_permission"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet id="1732927919724-9" author="Andres">
+        <createTable tableName="roles">
+            <column name="id" type="UUID">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_roles"/>
+            </column>
+            <column name="name" type="VARCHAR(255)"/>
+            <column name="description" type="VARCHAR(255)"/>
+            <column name="created_at" type="DATETIME"/>
+            <column name="updated_at" type="DATETIME"/>
+        </createTable>
+    </changeSet>
+    <changeSet id="1732927919724-10" author="Andres">
+        <createTable tableName="user_profiles">
+            <column name="id" type="UUID">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_user_profiles"/>
+            </column>
+            <column name="first_name" type="VARCHAR(255)"/>
+            <column name="last_name" type="VARCHAR(255)"/>
+            <column name="identification_type" type="VARCHAR(255)"/>
+            <column name="identification_number" type="VARCHAR(255)"/>
+            <column name="address" type="VARCHAR(255)"/>
+            <column name="phone_number" type="VARCHAR(255)"/>
+            <column name="birth_date" type="DATE"/>
+            <column name="image" type="VARCHAR(255)"/>
+            <column name="user_id" type="UUID">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_at" type="DATETIME"/>
+            <column name="updated_at" type="DATETIME"/>
+        </createTable>
+    </changeSet>
+    <changeSet id="1732927919724-11" author="Andres">
+        <createTable tableName="users">
+            <column name="id" type="UUID">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_users"/>
+            </column>
+            <column name="username" type="VARCHAR(255)"/>
+            <column name="email" type="VARCHAR(255)"/>
+            <column name="password" type="VARCHAR(255)"/>
+            <column name="role_id" type="UUID"/>
+            <column name="created_at" type="DATETIME"/>
+            <column name="updated_at" type="DATETIME"/>
+        </createTable>
+    </changeSet>
+    <changeSet id="1732927919724-12" author="Andres">
+        <addUniqueConstraint columnNames="user_id" constraintName="uc_user_profiles_user" tableName="user_profiles"/>
+    </changeSet>
+    <changeSet id="1732927919724-13" author="Andres">
+        <addForeignKeyConstraint baseColumnNames="book_id" baseTableName="loans" constraintName="FK_LOANS_ON_BOOK"
+                                 referencedColumnNames="id" referencedTableName="books"/>
+    </changeSet>
+    <changeSet id="1732927919724-14" author="Andres">
+        <addForeignKeyConstraint baseColumnNames="borrower_id" baseTableName="loans"
+                                 constraintName="FK_LOANS_ON_BORROWER" referencedColumnNames="id"
+                                 referencedTableName="users"/>
+    </changeSet>
+    <changeSet id="1732927919724-15" author="Andres">
+        <addForeignKeyConstraint baseColumnNames="role_id" baseTableName="users" constraintName="FK_USERS_ON_ROLE"
+                                 referencedColumnNames="id" referencedTableName="roles"/>
+    </changeSet>
+    <changeSet id="1732927919724-16" author="Andres">
+        <addForeignKeyConstraint baseColumnNames="user_id" baseTableName="user_profiles"
+                                 constraintName="FK_USER_PROFILES_ON_USER" referencedColumnNames="id"
+                                 referencedTableName="users"/>
+    </changeSet>
+    <changeSet id="1732927919724-17" author="Andres">
+        <addForeignKeyConstraint baseColumnNames="author_id" baseTableName="book_author"
+                                 constraintName="fk_booaut_on_author" referencedColumnNames="id"
+                                 referencedTableName="authors"/>
+    </changeSet>
+    <changeSet id="1732927919724-18" author="Andres">
+        <addForeignKeyConstraint baseColumnNames="book_id" baseTableName="book_author"
+                                 constraintName="fk_booaut_on_book" referencedColumnNames="id"
+                                 referencedTableName="books"/>
+    </changeSet>
+    <changeSet id="1732927919724-19" author="Andres">
+        <addForeignKeyConstraint baseColumnNames="book_id" baseTableName="book_genre" constraintName="fk_boogen_on_book"
+                                 referencedColumnNames="id" referencedTableName="books"/>
+    </changeSet>
+    <changeSet id="1732927919724-20" author="Andres">
+        <addForeignKeyConstraint baseColumnNames="genre_id" baseTableName="book_genre"
+                                 constraintName="fk_boogen_on_genre" referencedColumnNames="id"
+                                 referencedTableName="genres"/>
+    </changeSet>
+    <changeSet id="1732927919724-21" author="Andres">
+        <addForeignKeyConstraint baseColumnNames="permission_id" baseTableName="role_permission"
+                                 constraintName="fk_rolper_on_permission" referencedColumnNames="id"
+                                 referencedTableName="permissions"/>
+    </changeSet>
+    <changeSet id="1732927919724-22" author="Andres">
+        <addForeignKeyConstraint baseColumnNames="role_id" baseTableName="role_permission"
+                                 constraintName="fk_rolper_on_role" referencedColumnNames="id"
+                                 referencedTableName="roles"/>
+    </changeSet>
+
+</databaseChangeLog>
