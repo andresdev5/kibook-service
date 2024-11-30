@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
@@ -37,14 +38,33 @@ public class SecurityConfig {
         http.cors(withDefaults());
 
         http.authorizeHttpRequests(authorizeRequests ->
-            authorizeRequests.requestMatchers(
-                "/public/**",
-                "/v3/api-docs/**",
-                "/swagger-ui.html",
-                "/swagger-ui/**"
-            ).permitAll()
-                    .requestMatchers()
-                .anyRequest().authenticated());
+            authorizeRequests
+                    .requestMatchers(
+                        "/public/**",
+                        "/v3/api-docs/**",
+                        "/swagger-ui.html",
+                        "/swagger-ui/**"
+                    ).permitAll()
+                    .requestMatchers(HttpMethod.GET, "/books").hasAnyRole("USER", "ADMIN")
+                    .requestMatchers(HttpMethod.GET, "/books/search").hasAnyRole("USER", "ADMIN")
+                    .requestMatchers(HttpMethod.POST, "/books").hasRole("ADMIN")
+                    .requestMatchers(HttpMethod.PUT, "/books/**").hasRole("ADMIN")
+                    .requestMatchers(HttpMethod.DELETE, "/books/**").hasRole("ADMIN")
+
+                    .requestMatchers(HttpMethod.GET, "/genres").hasAnyRole("USER", "ADMIN")
+                    .requestMatchers(HttpMethod.GET, "/genres/search").hasAnyRole("USER", "ADMIN")
+                    .requestMatchers(HttpMethod.POST, "/genres").hasRole("ADMIN")
+                    .requestMatchers(HttpMethod.PUT, "/genres/**").hasRole("ADMIN")
+                    .requestMatchers(HttpMethod.DELETE, "/genres/**").hasRole("ADMIN")
+
+                    .requestMatchers(HttpMethod.GET, "/authors").hasAnyRole("USER", "ADMIN")
+                    .requestMatchers(HttpMethod.GET, "/authors/search").hasAnyRole("USER", "ADMIN")
+                    .requestMatchers(HttpMethod.POST, "/authors").hasRole("ADMIN")
+                    .requestMatchers(HttpMethod.PUT, "/authors/**").hasRole("ADMIN")
+                    .requestMatchers(HttpMethod.DELETE, "/authors/**").hasRole("ADMIN")
+
+                    .requestMatchers(HttpMethod.GET, "/users/me").hasAnyRole("USER", "ADMIN")
+                    .anyRequest().authenticated());
         http.authenticationProvider(authenticationProvider);
         http.sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
         http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);

@@ -36,7 +36,7 @@ public class User implements UserDetails {
     @JsonIgnore
     private String password;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     private Role role;
 
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, optional = true)
