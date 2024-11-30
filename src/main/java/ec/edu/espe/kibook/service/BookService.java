@@ -1,6 +1,8 @@
 package ec.edu.espe.kibook.service;
 
 import ec.edu.espe.kibook.dto.BookDto;
+import ec.edu.espe.kibook.dto.BookSearchParamsDto;
+import org.springframework.data.domain.Page;
 
 import java.util.List;
 import java.util.UUID;
@@ -11,5 +13,5 @@ public interface BookService {
     BookDto createBook(BookDto bookDto);
     BookDto updateBook(UUID id, BookDto bookDto);
     void deleteBook(UUID id);
-    List<BookDto> searchBooks(String title);
+    Page<BookDto> searchBooks(BookSearchParamsDto title);
 }

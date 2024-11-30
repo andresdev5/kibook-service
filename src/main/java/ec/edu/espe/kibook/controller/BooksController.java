@@ -1,8 +1,10 @@
 package ec.edu.espe.kibook.controller;
 
 import ec.edu.espe.kibook.dto.BookDto;
+import ec.edu.espe.kibook.dto.BookSearchParamsDto;
 import ec.edu.espe.kibook.service.BookService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -41,7 +43,7 @@ public class BooksController {
     }
 
     @GetMapping("/search")
-    public List<BookDto> searchBooks(@RequestParam String title) {
-        return List.of();
+    public Page<BookDto> searchBooks(BookSearchParamsDto params) {
+        return bookService.searchBooks(params);
     }
 }

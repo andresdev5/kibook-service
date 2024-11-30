@@ -2,6 +2,7 @@ package ec.edu.espe.kibook.service.impl;
 
 import ec.edu.espe.kibook.dto.AuthorDto;
 import ec.edu.espe.kibook.dto.BookDto;
+import ec.edu.espe.kibook.dto.BookSearchParamsDto;
 import ec.edu.espe.kibook.dto.GenreDto;
 import ec.edu.espe.kibook.entity.Author;
 import ec.edu.espe.kibook.entity.Book;
@@ -11,12 +12,20 @@ import ec.edu.espe.kibook.repository.AuthorRepository;
 import ec.edu.espe.kibook.repository.BookRepository;
 import ec.edu.espe.kibook.repository.GenreRepository;
 import ec.edu.espe.kibook.service.BookService;
-import ec.edu.espe.kibook.util.StringUtils;
+import ec.edu.espe.kibook.specification.BookSpecification;
+import ec.edu.espe.kibook.util.TextUtils;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.imgscalr.Scalr;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -31,11 +40,14 @@ import java.nio.file.Path;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class BookServiceImpl implements BookService {
+    private final Logger logger = Logger.getLogger(BookServiceImpl.class.getName());
     private final BookRepository bookRepository;
     private final GenreRepository genreRepository;
     private final AuthorRepository authorRepository;
@@ -115,14 +127,24 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
-    public List<BookDto> searchBooks(String title) {
-        return List.of();
+    public Page<BookDto> searchBooks(BookSearchParamsDto params) {
+        Specification<Book> filters = Specification
+                .where(StringUtils.isBlank(params.getTitle()) ? null : BookSpecification.titleContains(params.getTitle()));
+
+        Sort sort = Sort.by(
+                params.getOrder() == BookSearchParamsDto.Order.ASC
+                        ? Sort.Order.asc(params.getSortField().getValue())
+                        : Sort.Order.desc(params.getSortField().getValue()));
+        Pageable pageable = PageRequest.of(params.getPage(), params.getSize(), sort);
+        Page<Book> books = bookRepository.findAll(filters, pageable);
+
+        return books.map(book -> modelMapper.map(book, BookDto.class));
     }
 
     private String uploadDefaultBookImage(Book book) {
         try {
             String placeholder = String.format("https://placehold.co/400x600/ced6e0/57606f/jpg?text=%s",
-                    UriUtils.encodePath(StringUtils.wrapText(book.getTitle(), 20, "\n"), "UTF-8"));
+                    UriUtils.encodePath(TextUtils.wrapText(book.getTitle(), 20, "\n"), "UTF-8"));
             URL url = new URL(placeholder);
             InputStream is = url.openStream();
             byte[] imageBytes = IOUtils.toByteArray(is);
@@ -130,7 +152,7 @@ public class BookServiceImpl implements BookService {
             return uploadBookImage(book, imageBytes);
         } catch (Exception ex) {
             ex.printStackTrace();
-            System.err.println("Error al cargar la imagen por defecto: " + ex.getMessage());
+            logger.severe("Error al cargar la imagen por defecto: " + ex.getMessage());
 
             throw new ResponseStatusException(
                     HttpStatus.INTERNAL_SERVER_ERROR, "Error al guardar información del libro");
@@ -168,7 +190,7 @@ public class BookServiceImpl implements BookService {
 
             return "/" + path.toString().replace("\\", "/");
         } catch (IOException e) {
-            System.err.println("Error al procesar la imagen: " + e.getMessage());
+            logger.severe("Error al procesar la imagen del libro: " + e.getMessage());
             throw new ResponseStatusException(
                     HttpStatus.INTERNAL_SERVER_ERROR, "Error al procesar la imagen del libro");
         }

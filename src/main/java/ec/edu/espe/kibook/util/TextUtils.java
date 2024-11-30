@@ -1,6 +1,6 @@
 package ec.edu.espe.kibook.util;
 
-public class StringUtils {
+public class TextUtils {
     public static String wrapText(String string, int limit, String delimiter) {
         if (string.length() <= limit) {
             return string;

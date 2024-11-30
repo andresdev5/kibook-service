@@ -1,5 +1,6 @@
 package ec.edu.espe.kibook.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -31,6 +32,8 @@ public class User implements UserDetails {
 
     private String username;
     private String email;
+
+    @JsonIgnore
     private String password;
 
     @ManyToOne
@@ -54,7 +57,7 @@ public class User implements UserDetails {
 
     @Override
     public boolean isAccountNonExpired() {
-        return false;
+        return true;
     }
 
     @Override
