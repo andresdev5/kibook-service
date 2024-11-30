@@ -9,6 +9,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.UUID;
@@ -31,8 +32,7 @@ public class BookDto {
     @Pattern(regexp = "^[0-9]{3}-[0-9]-[0-9]{5}-[0-9]{3}-[0-9]$", groups = {Create.class, Update.class})
     private String isbn;
 
-    @NotEmpty(groups = {Create.class, Update.class})
-    private String image;
+    private MultipartFile image;
 
     @Size(max = 500)
     @NotEmpty(groups = {Create.class, Update.class})

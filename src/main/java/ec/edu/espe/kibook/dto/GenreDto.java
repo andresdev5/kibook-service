@@ -13,8 +13,8 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 public class GenreDto {
-    interface Create {}
-    interface Update {}
+    public interface Create {}
+    public interface Update {}
 
     @NotNull(groups = {Update.class, BookDto.Create.class})
     private UUID id;

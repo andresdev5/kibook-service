@@ -1,6 +1,7 @@
 package ec.edu.espe.kibook.dto;
 
 import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -32,6 +33,6 @@ public class AuthorDto {
     @NotEmpty(groups = {Create.class, Update.class})
     private String biography;
 
-    @NotEmpty(groups = {Create.class, Update.class})
+    @NotNull(groups = {Create.class, Update.class})
     private LocalDate birthDate;
 }

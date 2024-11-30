@@ -19,7 +19,7 @@ import java.util.UUID;
 @Table(name = "loans")
 public class Loan {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
     @ManyToOne
