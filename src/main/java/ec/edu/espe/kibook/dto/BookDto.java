@@ -1,5 +1,6 @@
 package ec.edu.espe.kibook.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import ec.edu.espe.kibook.entity.BookStatus;
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.EnumType;
@@ -33,7 +34,11 @@ public class BookDto {
     @Pattern(regexp = "^[0-9]{3}-[0-9]-[0-9]{5}-[0-9]{3}-[0-9]$", groups = {Create.class, Update.class})
     private String isbn;
 
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private byte[] image;
+
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    private String imageUrl;
 
     @Size(max = 500)
     @NotEmpty(groups = {Create.class, Update.class})

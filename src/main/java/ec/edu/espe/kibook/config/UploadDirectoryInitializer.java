@@ -15,16 +15,22 @@ public class UploadDirectoryInitializer {
     @PostConstruct
     public void init() {
         Path path = Paths.get("uploads");
+        Path booksPostersPath = Paths.get("uploads/books-posters");
 
+        createDirectory(path);
+        createDirectory(booksPostersPath);
+    }
+
+    private void createDirectory(Path path) {
         if (Files.notExists(path)) {
             try {
                 Files.createDirectory(path);
-                logger.info("Carpeta 'uploads' creada exitosamente.");
+                logger.info("Carpeta '" + path + "' creada exitosamente.");
             } catch (Exception e) {
-                logger.severe("Error al crear la carpeta 'uploads': " + e.getMessage());
+                logger.severe("Error al crear la carpeta '" + path + "': " + e.getMessage());
             }
         } else {
-            logger.info("La carpeta 'uploads' ya existe.");
+            logger.info("La carpeta '" + path + "' ya existe.");
         }
     }
 }

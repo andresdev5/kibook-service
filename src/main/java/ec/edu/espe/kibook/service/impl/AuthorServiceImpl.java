@@ -33,7 +33,8 @@ public class AuthorServiceImpl implements AuthorService {
     public AuthorDto getAuthorById(UUID id) {
         return modelMapper.map(authorRepository
                 .findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "No se ha encontrado el autor solicitado")), AuthorDto.class);
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND, "No se ha encontrado el autor solicitado")), AuthorDto.class);
     }
 
     @Override
@@ -56,10 +57,13 @@ public class AuthorServiceImpl implements AuthorService {
 
     @Override
     public void deleteAuthor(UUID id) {
-        boolean dependentBooksExists = bookRepository.existsAllByAuthorsIn(List.of(authorRepository.findById(id).orElseThrow()));
+        boolean dependentBooksExists = bookRepository
+                .existsAllByAuthorsIn(List.of(authorRepository.findById(id).orElseThrow()));
 
         if (dependentBooksExists) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "No se puede eliminar un autor que tiene libros asociados, elimina los libros primero");
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "No se puede eliminar un autor que tiene libros asociados, elimina los libros primero");
         }
 
         authorRepository.deleteById(id);

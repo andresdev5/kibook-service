@@ -11,12 +11,23 @@ import ec.edu.espe.kibook.repository.AuthorRepository;
 import ec.edu.espe.kibook.repository.BookRepository;
 import ec.edu.espe.kibook.repository.GenreRepository;
 import ec.edu.espe.kibook.service.BookService;
+import ec.edu.espe.kibook.util.StringUtils;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.io.IOUtils;
+import org.imgscalr.Scalr;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
+import org.springframework.web.util.UriUtils;
 
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.*;
+import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
@@ -40,10 +51,14 @@ public class BookServiceImpl implements BookService {
 
     @Override
     public BookDto getBookById(UUID id) {
-        return null;
+        return modelMapper.map(bookRepository
+            .findById(id)
+            .orElseThrow(() -> new ResponseStatusException(
+                    HttpStatus.NOT_FOUND, "No se ha encontrado el libro solicitado")), BookDto.class);
     }
 
     @Override
+    @Transactional
     public BookDto createBook(BookDto bookDto) {
         Set<Genre> genres = genreRepository.findAllByIdIn(bookDto.getGenres().stream()
                     .map(GenreDto::getId)
@@ -67,17 +82,21 @@ public class BookServiceImpl implements BookService {
             .year(bookDto.getYear())
             .publisher(bookDto.getPublisher())
             .status(BookStatus.AVAILABLE)
+            .image("https://placehold.co/400x600")
             .genres(genres)
             .authors(authors)
             .build();
 
-        if (bookDto.getImage() == null) {
-            book.setImage("https://placehold.co/300x400");
+        Book saved = bookRepository.save(book);
+
+        if (bookDto.getImage() != null) {
+            saved.setImage(uploadBookImage(saved, bookDto.getImage()));
+            bookRepository.save(saved);
         } else {
-            book.setImage(bookDto.getImage());
+            saved.setImage(uploadDefaultBookImage(saved));
+            bookRepository.save(saved);
         }
 
-        Book saved = bookRepository.save(book);
         return modelMapper.map(saved, BookDto.class);
     }
 
@@ -89,7 +108,8 @@ public class BookServiceImpl implements BookService {
     @Override
     public void deleteBook(UUID id) {
         Book book = bookRepository.findById(id)
-            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "No se ha encontrado el libro solicitado"));
+            .orElseThrow(() -> new ResponseStatusException(
+                    HttpStatus.NOT_FOUND, "No se ha encontrado el libro solicitado"));
 
         bookRepository.delete(book);
     }
@@ -97,5 +117,60 @@ public class BookServiceImpl implements BookService {
     @Override
     public List<BookDto> searchBooks(String title) {
         return List.of();
+    }
+
+    private String uploadDefaultBookImage(Book book) {
+        try {
+            String placeholder = String.format("https://placehold.co/400x600/ced6e0/57606f/jpg?text=%s",
+                    UriUtils.encodePath(StringUtils.wrapText(book.getTitle(), 20, "\n"), "UTF-8"));
+            URL url = new URL(placeholder);
+            InputStream is = url.openStream();
+            byte[] imageBytes = IOUtils.toByteArray(is);
+
+            return uploadBookImage(book, imageBytes);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            System.err.println("Error al cargar la imagen por defecto: " + ex.getMessage());
+
+            throw new ResponseStatusException(
+                    HttpStatus.INTERNAL_SERVER_ERROR, "Error al guardar información del libro");
+        }
+    }
+
+    private String uploadBookImage(Book book, byte[] image) {
+        String timestamp = String.valueOf(System.currentTimeMillis());
+        String filename = String.format("book-%s-%s.jpg", book.getId(), timestamp);
+        Path path = Path.of("uploads", "books-posters", filename);
+
+        try {
+            int width = 400;
+            int height = 600;
+            BufferedImage inputImage = ImageIO.read(new ByteArrayInputStream(image));
+            Scalr.Mode mode = (double) width / (double) height >= (double) inputImage.getWidth()
+                            / (double) inputImage.getHeight() ? Scalr.Mode.FIT_TO_WIDTH
+                    : Scalr.Mode.FIT_TO_HEIGHT;
+
+            BufferedImage bufferedImage = Scalr.resize(inputImage, Scalr.Method.QUALITY, mode, width, height);
+
+            int x = 0;
+            int y = 0;
+
+            if (mode == Scalr.Mode.FIT_TO_WIDTH) {
+                y = (bufferedImage.getHeight() - height) / 2;
+            } else if (mode == Scalr.Mode.FIT_TO_HEIGHT) {
+                x = (bufferedImage.getWidth() - width) / 2;
+            }
+
+            bufferedImage = Scalr.crop(bufferedImage, x, y, width, height);
+            File outputFile = path.toFile();
+            Files.createDirectories(path.getParent());
+            ImageIO.write(bufferedImage, "jpg", outputFile);
+
+            return "/" + path.toString().replace("\\", "/");
+        } catch (IOException e) {
+            System.err.println("Error al procesar la imagen: " + e.getMessage());
+            throw new ResponseStatusException(
+                    HttpStatus.INTERNAL_SERVER_ERROR, "Error al procesar la imagen del libro");
+        }
     }
 }

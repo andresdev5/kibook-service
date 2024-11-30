@@ -22,7 +22,7 @@ public class BooksController {
 
     @GetMapping("/{id}")
     public BookDto getBookById(@PathVariable UUID id) {
-        return new BookDto();
+        return bookService.getBookById(id);
     }
 
     @PostMapping
@@ -32,12 +32,12 @@ public class BooksController {
 
     @PutMapping("/{id}")
     public BookDto updateBook(@PathVariable UUID id, @RequestBody @Validated({ BookDto.Update.class }) BookDto bookDto) {
-        return bookDto;
+        return bookService.updateBook(id, bookDto);
     }
 
     @DeleteMapping("/{id}")
     public void deleteBook(@PathVariable UUID id) {
-
+        bookService.deleteBook(id);
     }
 
     @GetMapping("/search")
