@@ -1,6 +1,7 @@
 package ec.edu.espe.kibook.dto;
 
 import ec.edu.espe.kibook.entity.BookStatus;
+import jakarta.persistence.EntityListeners;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.validation.Valid;
@@ -9,7 +10,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.web.multipart.MultipartFile;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.util.List;
 import java.util.UUID;
@@ -32,7 +33,7 @@ public class BookDto {
     @Pattern(regexp = "^[0-9]{3}-[0-9]-[0-9]{5}-[0-9]{3}-[0-9]$", groups = {Create.class, Update.class})
     private String isbn;
 
-    private MultipartFile image;
+    private byte[] image;
 
     @Size(max = 500)
     @NotEmpty(groups = {Create.class, Update.class})

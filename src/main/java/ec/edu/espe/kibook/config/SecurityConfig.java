@@ -51,7 +51,8 @@ public class SecurityConfig {
         config.setAllowedOrigins(List.of(
                 "http://localhost:4200",
                 "http://localhost",
-                "http://20.197.227.154"
+                "http://200.105.253.153:4200",
+                "http://200.105.253.153"
         ));
         config.addAllowedHeader("*");
         config.setAllowedMethods(

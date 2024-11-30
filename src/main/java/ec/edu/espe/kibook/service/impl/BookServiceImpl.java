@@ -73,6 +73,8 @@ public class BookServiceImpl implements BookService {
 
         if (bookDto.getImage() == null) {
             book.setImage("https://placehold.co/300x400");
+        } else {
+            book.setImage(bookDto.getImage());
         }
 
         Book saved = bookRepository.save(book);

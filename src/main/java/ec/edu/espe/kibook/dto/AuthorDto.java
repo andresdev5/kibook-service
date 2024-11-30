@@ -1,11 +1,13 @@
 package ec.edu.espe.kibook.dto;
 
+import jakarta.persistence.EntityListeners;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDate;
 import java.util.UUID;
@@ -18,7 +20,7 @@ public class AuthorDto {
     public interface Create {}
     public interface Update {}
 
-    @NotEmpty(groups = {Update.class, BookDto.Create.class})
+    @NotNull(groups = {Update.class, BookDto.Create.class})
     private UUID id;
 
     @NotEmpty(groups = {Create.class, Update.class})
