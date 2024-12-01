@@ -19,7 +19,7 @@ public class UserDto {
     public interface Create {}
     public interface Update {}
 
-    @NotNull(groups = { Create.class })
+    @NotNull(groups = { Update.class })
     private UUID id;
 
     @NotEmpty(groups = { Create.class, Update.class })

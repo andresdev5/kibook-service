@@ -4,6 +4,7 @@ import ec.edu.espe.kibook.dto.AuthCredentialsDto;
 import ec.edu.espe.kibook.dto.AuthResponseDto;
 import ec.edu.espe.kibook.dto.UserDto;
 import ec.edu.espe.kibook.dto.UserProfileDto;
+import ec.edu.espe.kibook.entity.Permission;
 import ec.edu.espe.kibook.entity.Role;
 import ec.edu.espe.kibook.entity.User;
 import ec.edu.espe.kibook.entity.UserProfile;
@@ -14,15 +15,18 @@ import ec.edu.espe.kibook.service.AuthService;
 import ec.edu.espe.kibook.service.JwtService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -31,18 +35,27 @@ public class AuthServiceImpl implements AuthService {
     private final UserRepository userRepository;
     private final UserProfileRepository userProfileRepository;
     private final RoleRepository roleRepository;
+    private final AuthenticationManager authenticationManager;
+    private final PasswordEncoder passwordEncoder;
 
-    @Autowired
-    private AuthenticationManager authenticationManager;
-
+    @Override
     public AuthResponseDto login(AuthCredentialsDto credentials) {
         String username = credentials.getUsername();
         String password = credentials.getPassword();
-
         Authentication authentication = authenticationManager
-                .authenticate(new UsernamePasswordAuthenticationToken(username, password));
+                    .authenticate(new UsernamePasswordAuthenticationToken(username, password));
+
         User user = (User) authentication.getPrincipal();
-        String token = jwtService.generateToken(user);
+        Set<Permission> permissions = user.getRole().getPermissions();
+        Map<String, Object> claims = Map.of(
+                "role", user.getRole().getName(),
+                "username", user.getUsername(),
+                "email", user.getEmail(),
+                "id", user.getId(),
+                "permissions", permissions.stream().map(Permission::getName).toList()
+        );
+
+        String token = jwtService.generateToken(claims, user);
 
         return AuthResponseDto.builder()
                 .token(token)
@@ -75,7 +88,7 @@ public class AuthServiceImpl implements AuthService {
 
         User newUser = User.builder()
                 .username(user.getUsername())
-                .password(user.getPassword())
+                .password(passwordEncoder.encode(user.getPassword()))
                 .email(user.getEmail())
                 .role(userRole)
                 .build();
