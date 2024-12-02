@@ -2,10 +2,15 @@ package ec.edu.espe.kibook.config;
 
 import ec.edu.espe.kibook.entity.Permission;
 import ec.edu.espe.kibook.entity.Role;
+import ec.edu.espe.kibook.entity.User;
+import ec.edu.espe.kibook.entity.UserProfile;
 import ec.edu.espe.kibook.repository.PermissionRepository;
 import ec.edu.espe.kibook.repository.RoleRepository;
+import ec.edu.espe.kibook.repository.UserProfileRepository;
+import ec.edu.espe.kibook.repository.UserRepository;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import java.nio.file.Files;
@@ -19,13 +24,17 @@ import java.util.logging.Logger;
 public class ConfigurationInitializer {
     private final Logger logger = Logger.getLogger(ConfigurationInitializer.class.getName());
     private final RoleRepository roleRepository;
+    private final UserRepository userRepository;
+    private final UserProfileRepository userProfileRepository;
     private final PermissionRepository permissionRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @PostConstruct
     public void init() {
         createDirectories();
         createDefaultRoles();
         createDefaultPermissions();
+        createAdminUser();
     }
 
     private void createDefaultRoles() {
@@ -101,6 +110,29 @@ public class ConfigurationInitializer {
                 logger.info(String.format("%d permisos añadidos al rol '%s'.", addedPermissions.size(), roleName));
             }
         });
+    }
+
+    private void createAdminUser() {
+        if (userRepository.findByCredentialId("admin").isPresent()) {
+            logger.info("El usuario administrador ya existe.");
+            return;
+        }
+
+        User user = User.builder()
+                .username("admin")
+                .password(passwordEncoder.encode("admin"))
+                .email("admin@admin.com")
+                .role(roleRepository.findFirstByNameIgnoreCase("ADMIN").orElse(null))
+                .build();
+        User savedUser = userRepository.save(user);
+
+        UserProfile profile = UserProfile.builder()
+                .firstName("Admin")
+                .lastName("Admin")
+                .user(user)
+                .build();
+
+        logger.info("Usuario administrador creado exitosamente.");
     }
 
     private void createDirectories() {

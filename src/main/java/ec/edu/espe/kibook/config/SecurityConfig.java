@@ -56,6 +56,7 @@ public class SecurityConfig {
                     .requestMatchers(HttpMethod.GET, "/users/me").hasAnyRole("USER", "ADMIN")
 
                     .requestMatchers("/error").permitAll()
+                    .requestMatchers("/uploads/**").permitAll()
                     .requestMatchers("/public/**").permitAll()
                     .requestMatchers("/auth/**").permitAll()
 
@@ -75,6 +76,7 @@ public class SecurityConfig {
         return (web) -> web.debug(false)
                 .ignoring()
                 .requestMatchers(
+                    "/uploads/**",
                     "/error",
                     "/public/**",
                     "/auth/**",
