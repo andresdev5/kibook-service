@@ -1,6 +1,7 @@
 package ec.edu.espe.kibook.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -35,6 +36,9 @@ public class Book {
     private String synopsis;
     private String publisher;
     private int year;
+
+    @Min(value = 0)
+    private int stock;
 
     @Enumerated(EnumType.STRING)
     private BookStatus status;

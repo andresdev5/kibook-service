@@ -199,5 +199,12 @@
                                  constraintName="fk_rolper_on_role" referencedColumnNames="id"
                                  referencedTableName="roles"/>
     </changeSet>
+    <changeSet id="CS-2" author="Andrés Jácome">
+        <addColumn tableName="books">
+            <column name="stock" type="INT" defaultValue="0">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+    </changeSet>
 
 </databaseChangeLog>

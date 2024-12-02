@@ -92,6 +92,7 @@ public class BookServiceImpl implements BookService {
             .isbn(bookDto.getIsbn())
             .synopsis(bookDto.getSynopsis())
             .year(bookDto.getYear())
+            .stock(bookDto.getStock())
             .publisher(bookDto.getPublisher())
             .status(BookStatus.AVAILABLE)
             .image("https://placehold.co/400x600")

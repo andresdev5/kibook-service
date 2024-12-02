@@ -49,6 +49,9 @@ public class BookDto {
     @Min(value = 0, groups = {Create.class, Update.class})
     private int year;
 
+    @Min(value = 0, groups = {Create.class, Update.class})
+    private int stock;
+
     @Enumerated(EnumType.STRING)
     @NotEmpty(groups = {Update.class})
     @Builder.Default
